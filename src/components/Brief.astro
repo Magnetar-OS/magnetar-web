@@ -1,0 +1,110 @@
+---
+const rules = [
+  {
+    title: 'Complete against a named rival',
+    body: 'Every app covers everything its benchmark does. The parity table in its roadmap is the scoreboard.',
+  },
+  {
+    title: 'Fixed once, below the interface',
+    body: 'A shared substrate owns storage, sync and credentials, so a bug is fixed in one place and every app stays a thin front end.',
+  },
+  {
+    title: 'Nothing siloed',
+    body: 'Panel applets, launcher plugins, daemons, portals and shared settings. The apps talk to the desktop and to each other.',
+  },
+  {
+    title: 'Wayland and the GPU, no apologies',
+    body: 'Layer-shell surfaces where they fit, and wgpu as the one rendering path that gets tuned.',
+  },
+];
+---
+
+<section class="brief" aria-labelledby="brief-title">
+  <p class="label">How it’s made</p>
+  <h2 id="brief-title" class="section-title">The brief every app is built against</h2>
+
+  <ul class="rules">
+    {rules.map((rule) => (
+      <li>
+        <h3>{rule.title}</h3>
+        <p>{rule.body}</p>
+      </li>
+    ))}
+  </ul>
+
+  <div class="measured">
+    <p class="label">Measured in September 2026</p>
+    <p class="log">
+      <span><b>~200,000</b> lines of Rust</span>
+      <span><b>2,268</b> tests</span>
+      <span><b>0</b> <code>todo!()</code> calls</span>
+      <span>Apps <b>GPL‑3.0</b>, substrate <b>MPL‑2.0</b></span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .brief {
+    position: relative;
+    z-index: 1;
+    padding: clamp(4rem, 10vw, 8rem) var(--gutter);
+    background: rgb(4 6 12 / 0.88);
+    border-top: 1px solid var(--rule);
+  }
+
+  .rules {
+    list-style: none;
+    margin: 3rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 2.5rem 2.5rem;
+    max-width: 72rem;
+  }
+
+  .rules li {
+    padding-left: 1.1rem;
+    border-left: 1px solid var(--field);
+  }
+
+  h3 {
+    margin: 0;
+    font-family: var(--display);
+    font-stretch: 125%;
+    font-weight: 500;
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
+
+  .rules p {
+    margin: 0.6rem 0 0;
+    color: var(--dim);
+  }
+
+  .measured {
+    margin-top: 4.5rem;
+    max-width: 72rem;
+  }
+
+  .log {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 2.5rem;
+    margin: 0.8rem 0 0;
+    padding: 1rem 0;
+    border-block: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-stretch: 85%;
+    font-size: 0.85rem;
+    color: var(--dim);
+  }
+
+  .log b {
+    color: var(--corona);
+    font-weight: 500;
+  }
+
+  .log code {
+    color: var(--corona);
+  }
+</style>

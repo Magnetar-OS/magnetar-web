@@ -1,0 +1,68 @@
+---
+import { GITHUB } from '../data/suite';
+---
+
+<footer class="footer">
+  <p class="sign" aria-hidden="true">magnetar</p>
+  <div class="cols">
+    <ul>
+      <li><a href={GITHUB} rel="external">All source on GitHub</a></li>
+      <li><a href={`${GITHUB}/magnetar/issues`} rel="external">Report a problem</a></li>
+      <li><a href="https://repo.magnetaros.com" rel="external">Package repository</a></li>
+    </ul>
+    <p>
+      Magnetar’s applications are GPL‑3.0 and its shared libraries MPL‑2.0. The distribution’s own
+      packages and installer image are GPL‑3.0 or later.
+    </p>
+    <p>
+      Magnetar is built on Arch Linux, CachyOS and COSMIC, and is not affiliated with any of them.
+      COSMIC is a trademark of System76.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 4rem var(--gutter) 2.5rem;
+    background: var(--void);
+    border-top: 1px solid var(--rule);
+    overflow: hidden;
+  }
+
+  .sign {
+    margin: 0 0 2.5rem;
+    font-family: var(--display);
+    font-stretch: 150%;
+    font-weight: 100;
+    font-size: clamp(3rem, 16vw, 16rem);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(124 196 255 / 0.35);
+    white-space: nowrap;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.5rem 3rem;
+    font-size: 0.88rem;
+    color: var(--dim);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li + li {
+    margin-top: 0.3rem;
+  }
+
+  p {
+    margin: 0;
+  }
+</style>

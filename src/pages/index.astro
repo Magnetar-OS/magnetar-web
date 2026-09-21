@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Layers from '../components/Layers.astro';
+import Suite from '../components/Suite.astro';
+import Brief from '../components/Brief.astro';
+import Install from '../components/Install.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base
+  title="Magnetar — an Arch-based Linux distribution"
+  description="Magnetar is a rolling-release Linux distribution built on Arch Linux and CachyOS, with the COSMIC desktop and its own suite of apps for mail, calendar, contacts, passwords and more."
+>
+  <Hero />
+  <main>
+    <Layers />
+    <Suite />
+    <Brief />
+    <Install />
+  </main>
+  <Footer />
+</Base>

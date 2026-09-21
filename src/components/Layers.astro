@@ -1,0 +1,231 @@
+---
+import { apps } from '../data/suite';
+
+// Star cross-section with real dipole field lines, r = L·sin²θ, drawn to the
+// same tilt as the live field. Units are SVG pixels; R is the star's radius.
+const R = 54;
+const CORE = 34;
+
+const loop = (L: number, side: 1 | -1): string => {
+  const theta0 = Math.asin(Math.sqrt(R / L));
+  const steps = 64;
+  const pts: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = theta0 + ((Math.PI - 2 * theta0) * i) / steps;
+    const r = L * Math.sin(t) ** 2;
+    pts.push(`${(side * r * Math.sin(t)).toFixed(1)},${(-r * Math.cos(t)).toFixed(1)}`);
+  }
+  return `M${pts.join('L')}`;
+};
+
+const tubes = apps.map((app, i) => ({ hue: app.hue, L: R * (1.9 + i * 0.42) }));
+const faint = [1.35, 1.6, 5.4, 6.2].map((k) => R * k);
+---
+
+<section class="layers" id="layers" aria-labelledby="layers-title">
+  <div class="intro">
+    <p class="label">What it is</p>
+    <h2 id="layers-title" class="section-title">A distribution built like the star it’s named after</h2>
+    <p class="lede">
+      A neutron star has a dense core, a thin crust, and a magnetosphere that reaches far past both.
+      Magnetar is built the same way: <strong>a rolling Arch Linux system with CachyOS’s kernel and
+      packages at its core, the COSMIC desktop over it, and its own applications around the
+      outside.</strong>
+    </p>
+  </div>
+
+  <figure class="diagram">
+    <svg viewBox="-320 -250 640 500" role="img" aria-labelledby="layers-svg-title">
+      <title id="layers-svg-title">
+        Cross-section of a neutron star: an Arch Linux and CachyOS core, a COSMIC crust, and eight
+        coloured field lines for the applications.
+      </title>
+      <g transform="rotate(24)">
+        {faint.map((L) => (
+          <>
+            <path d={loop(L, 1)} class="faint" />
+            <path d={loop(L, -1)} class="faint" />
+          </>
+        ))}
+        {tubes.map(({ hue, L }) => (
+          <>
+            <path d={loop(L, 1)} stroke={hue} class="tube" />
+            <path d={loop(L, -1)} stroke={hue} class="tube" />
+          </>
+        ))}
+        <line x1="0" y1={-R} x2="0" y2="-240" class="jet" />
+        <line x1="0" y1={R} x2="0" y2="240" class="jet" />
+      </g>
+      <circle r={R} class="crust" />
+      <circle r={CORE} class="core" />
+
+      <g class="callout">
+        <line x1="10" y1="-4" x2="150" y2="-4" />
+        <text x="156" y="0">core · Arch + CachyOS</text>
+        <line x1={-R + 6} y1="30" x2="-170" y2="120" />
+        <text x="-176" y="136" text-anchor="end">crust · COSMIC</text>
+        <text x="310" y="-214" text-anchor="end">magnetosphere · the suite</text>
+      </g>
+    </svg>
+  </figure>
+
+  <dl class="strata">
+    <div>
+      <dt><span class="label">Magnetosphere</span>The suite</dt>
+      <dd>
+        Mail, calendar, contacts, passwords, a launcher and more, written in Rust for COSMIC and wired
+        into the system. Locket is the keyring, Jump opens on Super+Space, and Envelope hands meeting
+        invitations to Slate.
+      </dd>
+    </div>
+    <div>
+      <dt><span class="label">Crust</span>COSMIC</dt>
+      <dd>
+        System76’s Rust desktop on Wayland, set up from the first boot: the COSMIC greeter, PipeWire
+        audio, Qt apps themed to match, Ghostty as the terminal, and firmware updates through fwupd.
+      </dd>
+    </div>
+    <div>
+      <dt><span class="label">Core</span>Arch &amp; CachyOS</dt>
+      <dd>
+        Arch Linux’s rolling base and pacman, with CachyOS’s kernel, hardware detection and packages
+        rebuilt for x86‑64‑v3, v4 and Zen 4. Magnetar follows both upstreams rather than forking
+        them, so their fixes reach you as they ship.
+      </dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .layers {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'intro diagram'
+      'strata diagram';
+    column-gap: clamp(1.5rem, 5vw, 5rem);
+    padding: clamp(5rem, 12vw, 10rem) var(--gutter);
+    background: linear-gradient(180deg, rgb(4 6 12 / 0) 0, rgb(4 6 12 / 0.88) 14rem);
+  }
+
+  .intro {
+    grid-area: intro;
+  }
+
+  code {
+    color: var(--field);
+    font-size: 0.9em;
+  }
+
+  .diagram {
+    grid-area: diagram;
+    margin: 0;
+    align-self: center;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  path {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .faint {
+    stroke: var(--field);
+    stroke-opacity: 0.18;
+    stroke-width: 1;
+  }
+
+  .tube {
+    stroke-width: 1.6;
+    stroke-opacity: 0.85;
+  }
+
+  .jet {
+    stroke: var(--corona);
+    stroke-opacity: 0.35;
+    stroke-width: 1;
+    stroke-dasharray: 2 5;
+  }
+
+  .crust {
+    fill: #16233f;
+    stroke: var(--field);
+    stroke-width: 1;
+  }
+
+  .core {
+    fill: var(--corona);
+  }
+
+  .callout line {
+    stroke: var(--dim);
+    stroke-width: 0.75;
+  }
+
+  .callout text {
+    fill: var(--dim);
+    font-family: var(--mono);
+    font-stretch: 80%;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .strata {
+    grid-area: strata;
+    margin: 2.5rem 0 0;
+    max-width: var(--measure);
+  }
+
+  .strata div {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.2rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  dt {
+    font-family: var(--display);
+    font-stretch: 130%;
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  dt .label {
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--dim);
+  }
+
+  @media (max-width: 900px) {
+    .layers {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'intro' 'diagram' 'strata';
+    }
+
+    .diagram {
+      margin-top: 2rem;
+      padding: 0 1rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .strata div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.4rem;
+    }
+  }
+</style>

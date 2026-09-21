@@ -1,0 +1,469 @@
+---
+import { GITHUB } from '../data/suite';
+import { variants } from '../scripts/field/variants';
+---
+
+<canvas id="field" class="field" aria-hidden="true"></canvas>
+
+<header class="bar">
+  <a class="mark" href="#top" aria-label="Magnetar, back to top">magnetar</a>
+  <nav aria-label="Sections">
+    <a href="#layers">Layers</a>
+    <a href="#suite">Apps</a>
+    <a href="#install">Install</a>
+    <a href={GITHUB} rel="external">Source&nbsp;↗</a>
+  </nav>
+</header>
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <h1 id="hero-title" class="wordmark">Magnetar</h1>
+
+  <div class="entry">
+    <p class="headword">
+      mag·ne·tar <span class="ipa">/ˈmæɡ.nɪ.tɑːr/</span> <em>noun</em>
+    </p>
+    <ol class="senses">
+      <li>A neutron star whose magnetic field is a thousand trillion times Earth’s.</li>
+      <li>A Linux distribution built on Arch and CachyOS, with the COSMIC desktop and a suite of apps made for it.</li>
+    </ol>
+    <p class="actions">
+      <a class="action primary" href="#install">Get Magnetar</a>
+      <a class="action" href={GITHUB} rel="external">Browse the source ↗</a>
+    </p>
+  </div>
+
+  <div class="readout" aria-label="Live simulation readout">
+    <fieldset class="variants" disabled>
+      <legend>Field</legend>
+      <div class="options">
+        {variants.map((v, i) => (
+          <label title={v.note}>
+            <input type="radio" name="field" value={v.id} checked={i === 0} />
+            <span>{v.label}</span>
+          </label>
+        ))}
+      </div>
+      <p class="note" data-readout="note" aria-live="polite">{variants[0]?.note}</p>
+    </fieldset>
+    <dl>
+      <div><dt>Spin period</dt><dd data-readout="spin">—</dd></div>
+      <div><dt>Axis tilt</dt><dd data-readout="tilt">—</dd></div>
+      <div><dt>Field particles</dt><dd data-readout="count">—</dd></div>
+      <div><dt>Renderer</dt><dd data-readout="backend">starting</dd></div>
+    </dl>
+    <button type="button" class="quake" data-quake disabled>Set off a starquake</button>
+  </div>
+</section>
+
+<script>
+  import { createStage } from '../scripts/field/stage';
+  import { apps } from '../data/suite';
+
+  const canvas = document.getElementById('field') as HTMLCanvasElement;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const small = matchMedia('(max-width: 700px)').matches;
+  const readout = (key: string, text: string) => {
+    const el = document.querySelector(`[data-readout="${key}"]`);
+    if (el) el.textContent = text;
+  };
+
+  async function start() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const stage = await createStage({
+        canvas,
+        tubeHues: apps.map((a) => a.hue),
+        particles: small ? 22000 : 64000,
+        reducedMotion,
+        variant: params.get('field') ?? '',
+      });
+      document.documentElement.dataset.field = 'live';
+      readout('count', stage.particles.toLocaleString('en'));
+      readout('backend', stage.backend);
+
+      const describe = () => {
+        const v = stage.variant;
+        readout('spin', reducedMotion || v.spinPeriod === 0 ? 'held still' : `${v.spinPeriod.toFixed(1)} s`);
+        readout('tilt', `${v.tiltDegrees}°`);
+        readout('note', v.note);
+      };
+      describe();
+
+      // Field switcher, remembered in the address so a view can be shared.
+      const picker = document.querySelector<HTMLFieldSetElement>('.variants');
+      if (picker) {
+        picker.disabled = false;
+        const current = picker.querySelector<HTMLInputElement>(`input[value="${stage.variant.id}"]`);
+        if (current) current.checked = true;
+        picker.addEventListener('change', (e) => {
+          const id = (e.target as HTMLInputElement).value;
+          stage.show(id);
+          describe();
+          params.set('field', id);
+          history.replaceState(null, '', `?${params}${location.hash}`);
+        });
+      }
+
+      const quake = document.querySelector<HTMLButtonElement>('[data-quake]');
+      if (quake && !reducedMotion) {
+        quake.disabled = false;
+        quake.addEventListener('click', () => stage.flare());
+      }
+
+      // Park the star to the side once the reader leaves the hero.
+      const hero = document.getElementById('top');
+      if (hero) {
+        new IntersectionObserver(
+          ([entry]) => stage.setDrift(entry && entry.intersectionRatio > 0.35 ? 0 : 1),
+          { threshold: [0, 0.35, 1] },
+        ).observe(hero);
+      }
+
+      // The suite list lights each app's flux tube.
+      for (const row of document.querySelectorAll<HTMLElement>('[data-tube]')) {
+        const index = Number(row.dataset.tube);
+        row.addEventListener('pointerenter', () => stage.focus(index));
+        row.addEventListener('pointerleave', () => stage.focus(-1));
+        row.addEventListener('focusin', () => stage.focus(index));
+        row.addEventListener('focusout', () => stage.focus(-1));
+      }
+    } catch (error) {
+      // No WebGPU and no WebGL 2: show the still image instead.
+      console.error('The field could not start:', error);
+      document.documentElement.dataset.field = 'still';
+      readout('backend', 'unavailable');
+      readout('spin', 'still image');
+      readout('note', 'This browser can’t run WebGPU or WebGL 2, so this is a still image.');
+    }
+  }
+
+  void start();
+</script>
+
+<style>
+  .field {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100lvh;
+    z-index: 0;
+    display: block;
+    background: radial-gradient(ellipse at 50% 42%, #0b1428 0%, var(--void) 62%);
+  }
+
+  :global(html[data-field='still']) .field {
+    background: url('/field-still.svg') center / cover no-repeat, var(--void);
+  }
+
+  .bar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem var(--gutter);
+    background: linear-gradient(var(--void) 45%, rgb(4 6 12 / 0));
+  }
+
+  .mark {
+    font-family: var(--display);
+    font-stretch: 150%;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: var(--corona);
+    text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    gap: clamp(0.9rem, 2.5vw, 2rem);
+    font-family: var(--mono);
+    font-stretch: 80%;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  nav a {
+    color: var(--dim);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--corona);
+  }
+
+  @media (max-width: 520px) {
+    nav a:not([rel]) {
+      display: none;
+    }
+  }
+
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto auto;
+    grid-template-areas:
+      '. .'
+      'word word'
+      'entry readout';
+    column-gap: 2rem;
+    padding: 5rem var(--gutter) 2.5rem;
+    pointer-events: none;
+    /* Keep the text legible where it sits over the field. */
+    background: linear-gradient(to top, rgb(4 6 12 / 0.8), rgb(4 6 12 / 0) 50%);
+  }
+
+  .hero > * {
+    pointer-events: auto;
+  }
+
+  .wordmark {
+    grid-area: word;
+    margin: 0 0 1.5rem;
+    font-family: var(--display);
+    font-stretch: 150%;
+    font-weight: 200;
+    font-size: clamp(2.6rem, 10.6vw, 13rem);
+    line-height: 0.82;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    /* Wordmark sits on the field, so let the field glow through its lower edge. */
+    background: linear-gradient(180deg, var(--corona) 30%, rgb(124 196 255 / 0.55));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: settle 1.6s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+  }
+
+  @keyframes settle {
+    from {
+      font-stretch: 50%;
+      letter-spacing: 0.2em;
+      opacity: 0;
+    }
+  }
+
+  .entry {
+    grid-area: entry;
+    max-width: 36rem;
+  }
+
+  .headword {
+    margin: 0;
+    font-family: var(--mono);
+    font-stretch: 85%;
+    font-size: 0.85rem;
+    color: var(--corona);
+  }
+
+  .ipa,
+  .headword em {
+    color: var(--dim);
+  }
+
+  .senses {
+    margin: 0.7rem 0 0;
+    padding-left: 1.4rem;
+    color: var(--corona);
+  }
+
+  .senses li::marker {
+    font-family: var(--mono);
+    font-size: 0.8em;
+    color: var(--field);
+  }
+
+  .senses li + li {
+    margin-top: 0.3rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.6rem 0 0;
+  }
+
+  .action {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--corona);
+    text-decoration: none;
+    background: rgb(4 6 12 / 0.55);
+    backdrop-filter: blur(6px);
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+
+  .action:hover {
+    border-color: var(--field);
+  }
+
+  .action.primary {
+    background: var(--corona);
+    border-color: var(--corona);
+    color: var(--void);
+    font-weight: 600;
+  }
+
+  .action.primary:hover {
+    background: var(--field);
+    border-color: var(--field);
+  }
+
+  .readout {
+    grid-area: readout;
+    align-self: end;
+    font-family: var(--mono);
+    font-stretch: 80%;
+    font-size: 0.72rem;
+    min-width: 15rem;
+  }
+
+  .variants {
+    margin: 0 0 1rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: 0.45rem;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .options label {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .options input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .options span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0 0.65rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--dim);
+    background: rgb(4 6 12 / 0.5);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .options label:hover span {
+    color: var(--corona);
+  }
+
+  .options input:checked + span {
+    color: var(--void);
+    background: var(--field);
+    border-color: var(--field);
+  }
+
+  .options input:focus-visible + span {
+    outline: 2px solid var(--flare);
+    outline-offset: 2px;
+  }
+
+  .variants:disabled {
+    opacity: 0.5;
+  }
+
+  .note {
+    margin: 0.5rem 0 0;
+    max-width: 22rem;
+    min-height: 2.6em;
+    color: var(--dim);
+    line-height: 1.4;
+  }
+
+  dl {
+    margin: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 0.38rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  dt {
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--corona);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .quake {
+    margin-top: 0.8rem;
+    width: 100%;
+    min-height: 2.5rem;
+    font: inherit;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--flare);
+    background: transparent;
+    border: 1px dashed rgb(255 177 74 / 0.45);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .quake:hover:not(:disabled) {
+    background: rgb(255 177 74 / 0.1);
+  }
+
+  .quake:disabled {
+    color: var(--dim);
+    border-color: var(--rule);
+    cursor: default;
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: '.' 'word' 'entry' 'readout';
+      grid-template-rows: minmax(34svh, 1fr) auto auto auto;
+      padding-top: 4.5rem;
+    }
+
+    .readout {
+      margin-top: 2rem;
+      min-width: 0;
+    }
+  }
+</style>

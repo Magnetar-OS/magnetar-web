@@ -1,0 +1,271 @@
+---
+const REPO = 'https://repo.magnetaros.com';
+const FINGERPRINT = '382D984841F8C8A2BFB952675623FAF3DF36FFAF';
+
+const steps = [
+  {
+    title: 'Trust the signing key',
+    body: 'Import the key pacman will check every package against, then confirm the fingerprint before you sign it.',
+    code: `curl -sLo /tmp/magnetar.asc ${REPO}/magnetar.asc
+sudo pacman-key --add /tmp/magnetar.asc
+sudo pacman-key --lsign-key ${FINGERPRINT}`,
+    note: 'Fingerprint 382D 9848 41F8 C8A2 BFB9  5267 5623 FAF3 DF36 FFAF, Magnetar OS (package signing) <packages@magnetaros.com>',
+  },
+  {
+    title: 'Add the repository',
+    body: 'Append this to /etc/pacman.conf. Keep the signature level as written.',
+    code: `[magnetar]
+SigLevel = Required DatabaseOptional
+Server = ${REPO}/$arch`,
+    note: null,
+  },
+  {
+    title: 'Install Magnetar',
+    body: 'One meta package brings in the COSMIC desktop, Magnetar’s defaults and branding, and the apps.',
+    code: `sudo pacman -Syu
+sudo pacman -S magnetar-desktop`,
+    note: null,
+  },
+];
+---
+
+<section class="install" id="install" aria-labelledby="install-title">
+  <div class="head">
+    <p class="label">Get Magnetar</p>
+    <h2 id="install-title" class="section-title">Two ways in</h2>
+    <p class="status" role="note">
+      <strong>Pre-release.</strong> The live ISO is not published yet, and the package repository is
+      still being filled.
+    </p>
+
+    <div class="iso">
+      <h3>From the live ISO</h3>
+      <p>
+        Boot into a live COSMIC session, try it, then install with the Calamares installer. Hardware
+        detection sets up the drivers for your graphics card, NVIDIA included.
+      </p>
+      <dl class="spec">
+        <div><dt>Base</dt><dd>Arch Linux, rolling release</dd></div>
+        <div><dt>Kernel</dt><dd>linux-cachyos, LTS available</dd></div>
+        <div><dt>Desktop</dt><dd>COSMIC on Wayland</dd></div>
+        <div><dt>Installer</dt><dd>Calamares</dd></div>
+        <div><dt>Packages</dt><dd>pacman, signed <code>[magnetar]</code> repository</dd></div>
+        <div><dt>Filesystems</dt><dd>ZFS kernels available</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="switch">
+    <h3 class="switch-title">Already running CachyOS? Switch over</h3>
+    <ol class="steps">
+      {steps.map((step) => (
+        <li>
+          <h4>{step.title}</h4>
+          <p>{step.body}</p>
+          <div class="code">
+            <pre><code>{step.code}</code></pre>
+            <button type="button" data-copy={step.code}>Copy</button>
+          </div>
+          {step.note && <p class="note">{step.note}</p>}
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        button.textContent = 'Copied';
+      } catch {
+        button.textContent = 'Select and copy';
+      }
+      setTimeout(() => (button.textContent = 'Copy'), 2000);
+    });
+  }
+</script>
+
+<style>
+  .install {
+    position: relative;
+    z-index: 1;
+    padding: clamp(4rem, 10vw, 8rem) var(--gutter);
+    background: rgb(4 6 12 / 0.92);
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 3rem clamp(2rem, 5vw, 5rem);
+  }
+
+  .status {
+    max-width: 30rem;
+    margin: 1.5rem 0 0;
+    padding: 0.9rem 1rem;
+    border: 1px dashed rgb(255 177 74 / 0.45);
+    border-radius: 3px;
+    color: var(--dim);
+    font-size: 0.95rem;
+  }
+
+  .status strong {
+    color: var(--flare);
+    font-weight: 600;
+  }
+
+  .iso {
+    margin-top: 2.5rem;
+    max-width: 30rem;
+  }
+
+  .iso p {
+    margin: 0.4rem 0 0;
+    color: var(--dim);
+  }
+
+  .spec {
+    margin: 1.2rem 0 0;
+    border-top: 1px solid var(--rule);
+    font-size: 0.9rem;
+  }
+
+  .spec div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .spec dt {
+    font-family: var(--mono);
+    font-stretch: 80%;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    padding-top: 0.15rem;
+  }
+
+  .spec dd {
+    margin: 0;
+  }
+
+  .spec code {
+    color: var(--field);
+    font-size: 0.85em;
+  }
+
+  .switch-title {
+    margin: 0 0 1.8rem;
+  }
+
+  .steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 2.5rem 3rem;
+    border-left: 1px solid var(--rule);
+    margin-left: 0.9rem;
+  }
+
+  .steps li:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -0.9rem;
+    top: -0.1rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--void);
+    border: 1px solid var(--field);
+    color: var(--field);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+
+  h3,
+  h4 {
+    margin: 0;
+    font-family: var(--display);
+    font-stretch: 125%;
+    font-weight: 500;
+    font-size: 1.2rem;
+  }
+
+  .steps p {
+    margin: 0.4rem 0 0;
+    color: var(--dim);
+  }
+
+  .code {
+    position: relative;
+    margin-top: 1rem;
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem 5.5rem 1rem 1rem;
+    overflow-x: auto;
+    background: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--corona);
+  }
+
+  button {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    min-height: 2rem;
+    padding: 0 0.7rem;
+    font-family: var(--mono);
+    font-stretch: 80%;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--field);
+    background: var(--void);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    border-color: var(--field);
+  }
+
+  .steps .note {
+    margin-top: 0.6rem;
+    font-family: var(--mono);
+    font-stretch: 80%;
+    font-size: 0.72rem;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 900px) {
+    .install {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .steps li {
+      padding-left: 1.6rem;
+    }
+  }
+</style>
