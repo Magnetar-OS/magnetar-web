@@ -5,6 +5,10 @@
   "type": "module",
   "description": "magnetaros.com — the Magnetar website",
   "license": "GPL-3.0-only",
+  "packageManager": "pnpm@11.28.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
