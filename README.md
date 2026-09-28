@@ -10,6 +10,7 @@ pnpm install
 pnpm dev        # http://localhost:4321
 pnpm build      # astro check, then a static build in dist/
 pnpm preview    # serve dist/
+pnpm test       # build, then check the built page's install steps and links
 ```
 
 `astro check` needs TypeScript 6: TypeScript 7's native compiler does not yet
@@ -21,10 +22,11 @@ expose the API it uses, which is why `typescript` is pinned to `^6`.
 |---|---|
 | `src/pages/index.astro` | The page, assembled from the section components. |
 | `src/components/` | Hero (with the live field), Layers, Suite, Brief, Install, Footer. |
-| `src/data/suite.ts` | The apps: names, AppStream summaries, benchmarks, icon hues. The order is also each app's flux tube in the field. |
+| `src/data/suite.ts` | The apps: names, package names, AppStream summaries, benchmarks, icon hues. The order is also each app's flux tube in the field. |
 | `src/scripts/field/stage.ts` | Renderer, camera, frame loop, page drift, focus and starquake. |
 | `src/scripts/field/shared.ts` | Field building blocks: dipole lines, jets, star, halo. |
 | `src/scripts/field/variants.ts` | The field looks the hero can switch between. |
+| `tests/` | Checks on the built page: the install steps cover every app. |
 | `public/icons/` | App icons, copied from `magnetar-brand/icons/hicolor/scalable/apps/`. |
 | `public/field-still.svg` | Shown when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |
 

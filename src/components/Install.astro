@@ -1,4 +1,6 @@
 ---
+import { apps } from '../data/suite';
+
 const REPO = 'https://repo.magnetaros.com';
 const FINGERPRINT = '382D984841F8C8A2BFB952675623FAF3DF36FFAF';
 
@@ -21,9 +23,10 @@ Server = ${REPO}/$arch`,
   },
   {
     title: 'Install Magnetar',
-    body: 'One meta package brings in the COSMIC desktop, Magnetar’s defaults and branding, and the apps.',
+    body: 'One meta package brings in the COSMIC desktop and Magnetar’s defaults and branding. The apps are packages of their own, so drop any you don’t want from the last line.',
     code: `sudo pacman -Syu
-sudo pacman -S magnetar-desktop`,
+sudo pacman -S magnetar-desktop
+sudo pacman -S ${apps.map((app) => app.package).join(' ')}`,
     note: null,
   },
 ];
