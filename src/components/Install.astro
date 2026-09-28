@@ -271,4 +271,12 @@ sudo pacman -S ${apps.map((app) => app.package).join(' ')}`,
       padding-left: 1.6rem;
     }
   }
+
+  /* Narrow code blocks scroll sideways, and the first line would slide under the
+     button, so give the button a band of its own above the code. */
+  @media (max-width: 600px) {
+    pre {
+      padding: 3.1rem 1rem 1rem;
+    }
+  }
 </style>
