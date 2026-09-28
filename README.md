@@ -14,7 +14,8 @@ pnpm test       # build, then check the built page (tests/site.test.mjs)
 ```
 
 `astro check` needs TypeScript 6: TypeScript 7's native compiler does not yet
-expose the API it uses, which is why `typescript` is pinned to `^6`.
+expose the API it uses, and `@astrojs/check` accepts only `^5 || ^6`. That is
+why `package.json` pins `typescript` to exactly `6.0.3`, the last 6.x release.
 
 ## Layout
 
