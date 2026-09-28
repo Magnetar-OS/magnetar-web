@@ -26,7 +26,7 @@ expose the API it uses, which is why `typescript` is pinned to `^6`.
 | `src/scripts/field/stage.ts` | Renderer, camera, frame loop, page drift, focus and starquake. |
 | `src/scripts/field/shared.ts` | Field building blocks: dipole lines, jets, star, halo. |
 | `src/scripts/field/variants.ts` | The field looks the hero can switch between. |
-| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly. |
+| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, and no link points at the package host root. |
 | `public/icons/` | App icons, copied from `magnetar-brand/icons/hicolor/scalable/apps/`. |
 | `public/field-still.svg` | Shown when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |
 

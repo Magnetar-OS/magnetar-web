@@ -32,3 +32,9 @@ test('the repository is added above [cachyos], not appended below the repos that
   assert.ok(!/Append this to \/etc\/pacman\.conf/.test(html), 'tells the reader to append [magnetar] to the end');
   assert.ok(/above the \[cachyos\] section/.test(decode(html)), 'does not say where [magnetar] goes');
 });
+
+test('no link points at the package host root, which serves a 404', () => {
+  const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => decode(m[1]));
+  assert.ok(!hrefs.some((h) => /^https:\/\/repo\.magnetaros\.com\/?$/.test(h)), 'links to https://repo.magnetaros.com');
+  assert.ok(hrefs.includes('https://github.com/Magnetar-OS/arch-repo'), 'no link to the arch-repo instructions');
+});
