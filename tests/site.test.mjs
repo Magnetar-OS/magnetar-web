@@ -64,3 +64,8 @@ test('the measured figures are the ones recorded with scripts/measure-suite.sh',
   assert.ok(!text.includes('2,268 tests'), 'still shows the unreproducible 2,268');
   assert.ok(text.includes(`Measured in ${measured.date}`));
 });
+
+test('the licence line names the apps that are GPL-3.0-or-later rather than -only', () => {
+  const text = decode(html.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ');
+  assert.ok(text.includes('(Locket and Peek GPL‑3.0 or later)'), 'the footer implies every app is GPL-3.0-only');
+});
