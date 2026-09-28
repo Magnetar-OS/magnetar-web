@@ -1,4 +1,6 @@
 ---
+import { measured } from '../data/suite';
+
 const rules = [
   {
     title: 'Complete against a named rival',
@@ -33,11 +35,11 @@ const rules = [
   </ul>
 
   <div class="measured">
-    <p class="label">Measured in September 2026</p>
+    <p class="label">Measured in {measured.date}</p>
     <p class="log">
-      <span><b>~200,000</b> lines of Rust</span>
-      <span><b>2,268</b> tests</span>
-      <span><b>0</b> <code>todo!()</code> calls</span>
+      <span><b>~{(Math.round(measured.rustLines / 1000) * 1000).toLocaleString('en')}</b> lines of Rust</span>
+      <span><b>{measured.tests.toLocaleString('en')}</b> tests</span>
+      <span><b>{measured.todos}</b> <code>todo!()</code> calls</span>
       <span>Apps <b>GPL‑3.0</b>, substrate <b>MPL‑2.0</b></span>
     </p>
   </div>

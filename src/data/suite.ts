@@ -39,4 +39,17 @@ export const underneath: readonly { name: string; repo: string; role: string }[]
   { name: 'grabit', repo: 'grabit', role: 'Select text anywhere and get a small bar of actions over it. Wayland only.' },
 ];
 
+/**
+ * The figures in the brief's "Measured in …" line. Reproduce them with
+ * `scripts/measure-suite.sh`, which counts each Rust repo's committed `main`
+ * with git grep: every line of tracked `*.rs` files, every `#[test]` or
+ * `#[tokio::test]` attribute line, and every `todo!(` call.
+ */
+export const measured = {
+  date: 'September 2026',
+  rustLines: 201_790,
+  tests: 2_717,
+  todos: 0,
+} as const;
+
 export const GITHUB = 'https://github.com/Magnetar-OS';

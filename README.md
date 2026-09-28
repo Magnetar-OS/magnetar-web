@@ -23,11 +23,12 @@ why `package.json` pins `typescript` to exactly `6.0.3`, the last 6.x release.
 |---|---|
 | `src/pages/index.astro` | The page, assembled from the section components. |
 | `src/components/` | Hero (with the live field), Layers, Suite, Brief, Install, Footer. |
-| `src/data/suite.ts` | The apps: names, package names, AppStream summaries, benchmarks, icon hues. The order is also each app's flux tube in the field. |
+| `src/data/suite.ts` | The apps: names, package names, AppStream summaries, benchmarks, icon hues. The order is also each app's flux tube in the field. Also the brief's measured figures. |
 | `src/scripts/field/stage.ts` | Renderer, camera, frame loop, page drift, focus and starquake. |
 | `src/scripts/field/shared.ts` | Field building blocks: dipole lines, jets, star, halo. |
 | `src/scripts/field/variants.ts` | The field looks the hero can switch between. |
-| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, and robots.txt, the sitemap and `og:url` are there. |
+| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, robots.txt, the sitemap and `og:url` are there, and the measured figures are the recorded ones. |
+| `scripts/measure-suite.sh` | Counts lines of Rust, tests and `todo!()` calls on each suite repo's `main`, for `measured` in `src/data/suite.ts`. Re-run it and update `measured` when refreshing the figures. |
 | `public/icons/` | App icons, copied from `magnetar-brand/icons/hicolor/scalable/apps/`. |
 | `public/robots.txt` | Allows all crawlers and points them at the sitemap, which `@astrojs/sitemap` writes at build time. |
 | `public/field-still.svg` | Shown when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |

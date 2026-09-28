@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, statSync } from 'node:fs';
 import { test } from 'node:test';
-import { apps } from '../src/data/suite.ts';
+import { apps, measured } from '../src/data/suite.ts';
 
 const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
 
@@ -56,4 +56,11 @@ test('crawlers find robots.txt, a sitemap listing the page, and og:url', () => {
   assert.match(dist('sitemap-index.xml'), /<loc>https:\/\/magnetaros\.com\/sitemap-0\.xml<\/loc>/);
   assert.match(dist('sitemap-0.xml'), /<loc>https:\/\/magnetaros\.com\/<\/loc>/);
   assert.match(html, /<meta property="og:url" content="https:\/\/magnetaros\.com\/"/);
+});
+
+test('the measured figures are the ones recorded with scripts/measure-suite.sh', () => {
+  const text = decode(html.replace(/<[^>]+>/g, ''));
+  assert.ok(text.includes(`${measured.tests.toLocaleString('en')} tests`), 'the test count is not the recorded one');
+  assert.ok(!text.includes('2,268 tests'), 'still shows the unreproducible 2,268');
+  assert.ok(text.includes(`Measured in ${measured.date}`));
 });
