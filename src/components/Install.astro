@@ -15,7 +15,7 @@ sudo pacman-key --lsign-key ${FINGERPRINT}`,
   },
   {
     title: 'Add the repository',
-    body: 'Append this to /etc/pacman.conf. Keep the signature level as written.',
+    body: 'Add this to /etc/pacman.conf, above the [cachyos] section: pacman takes each package from the first repository that has it. Keep the signature level as written.',
     code: `[magnetar]
 SigLevel = Required DatabaseOptional
 Server = ${REPO}/$arch`,

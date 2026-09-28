@@ -27,3 +27,8 @@ test('the install steps install every app, since magnetar-desktop only optdepend
   assert.ok(installed.has('magnetar-peek'), 'Peek is published as magnetar-peek');
   assert.ok(!/brings in[^<]*the apps/.test(html), 'the page still claims the meta package brings in the apps');
 });
+
+test('the repository is added above [cachyos], not appended below the repos that would shadow it', () => {
+  assert.ok(!/Append this to \/etc\/pacman\.conf/.test(html), 'tells the reader to append [magnetar] to the end');
+  assert.ok(/above the \[cachyos\] section/.test(decode(html)), 'does not say where [magnetar] goes');
+});
