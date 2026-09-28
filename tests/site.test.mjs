@@ -4,7 +4,7 @@
  * `pnpm test`, which builds first.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { test } from 'node:test';
 import { apps } from '../src/data/suite.ts';
 
@@ -37,4 +37,15 @@ test('no link points at the package host root, which serves a 404', () => {
   const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => decode(m[1]));
   assert.ok(!hrefs.some((h) => /^https:\/\/repo\.magnetaros\.com\/?$/.test(h)), 'links to https://repo.magnetaros.com');
   assert.ok(hrefs.includes('https://github.com/Magnetar-OS/arch-repo'), 'no link to the arch-repo instructions');
+});
+
+test('three.js loads in its own chunk, not in the script the page loads up front', () => {
+  const entries = [...html.matchAll(/<script type="module" src="([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(entries.length > 0, 'no module script on the page');
+  for (const src of entries) {
+    const file = new URL(`../dist${src}`, import.meta.url);
+    const size = statSync(file).size;
+    assert.ok(size < 100 * 1024, `${src} is ${size} bytes, so three.js is bundled into it`);
+    assert.match(readFileSync(file, 'utf8'), /import\(/, `${src} does not load the field on demand`);
+  }
 });

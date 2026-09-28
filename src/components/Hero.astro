@@ -56,7 +56,6 @@ import { variants } from '../scripts/field/variants';
 </section>
 
 <script>
-  import { createStage } from '../scripts/field/stage';
   import { apps } from '../data/suite';
 
   const canvas = document.getElementById('field') as HTMLCanvasElement;
@@ -70,6 +69,9 @@ import { variants } from '../scripts/field/variants';
   async function start() {
     try {
       const params = new URLSearchParams(location.search);
+      // three.js is most of the page's script weight, so it loads in its own chunk
+      // and the page script stays small.
+      const { createStage } = await import('../scripts/field/stage');
       const stage = await createStage({
         canvas,
         tubeHues: apps.map((a) => a.hue),
