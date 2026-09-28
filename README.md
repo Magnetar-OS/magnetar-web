@@ -10,7 +10,7 @@ pnpm install
 pnpm dev        # http://localhost:4321
 pnpm build      # astro check, then a static build in dist/
 pnpm preview    # serve dist/
-pnpm test       # build, then check the built page's install steps and links
+pnpm test       # build, then check the built page (tests/site.test.mjs)
 ```
 
 `astro check` needs TypeScript 6: TypeScript 7's native compiler does not yet
@@ -26,8 +26,9 @@ expose the API it uses, which is why `typescript` is pinned to `^6`.
 | `src/scripts/field/stage.ts` | Renderer, camera, frame loop, page drift, focus and starquake. |
 | `src/scripts/field/shared.ts` | Field building blocks: dipole lines, jets, star, halo. |
 | `src/scripts/field/variants.ts` | The field looks the hero can switch between. |
-| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, and no link points at the package host root. |
+| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, and robots.txt, the sitemap and `og:url` are there. |
 | `public/icons/` | App icons, copied from `magnetar-brand/icons/hicolor/scalable/apps/`. |
+| `public/robots.txt` | Allows all crawlers and points them at the sitemap, which `@astrojs/sitemap` writes at build time. |
 | `public/field-still.svg` | Shown when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |
 
 ## The field

@@ -49,3 +49,11 @@ test('three.js loads in its own chunk, not in the script the page loads up front
     assert.match(readFileSync(file, 'utf8'), /import\(/, `${src} does not load the field on demand`);
   }
 });
+
+test('crawlers find robots.txt, a sitemap listing the page, and og:url', () => {
+  const dist = (path) => readFileSync(new URL(`../dist/${path}`, import.meta.url), 'utf8');
+  assert.match(dist('robots.txt'), /^Sitemap: https:\/\/magnetaros\.com\/sitemap-index\.xml$/m);
+  assert.match(dist('sitemap-index.xml'), /<loc>https:\/\/magnetaros\.com\/sitemap-0\.xml<\/loc>/);
+  assert.match(dist('sitemap-0.xml'), /<loc>https:\/\/magnetaros\.com\/<\/loc>/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/magnetaros\.com\/"/);
+});

@@ -8,6 +8,7 @@ interface Props {
 
 const { title, description } = Astro.props;
 const og = new URL('/og.jpg', Astro.site);
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -19,8 +20,10 @@ const og = new URL('/og.jpg', Astro.site);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#04060c" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={og} />
