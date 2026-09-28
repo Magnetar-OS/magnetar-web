@@ -121,6 +121,19 @@ import { variants } from '../scripts/field/variants';
         ).observe(hero);
       }
 
+      // The field shows through the hero, Layers and Suite. Below them the page
+      // covers it, so stop drawing until one of them is back on screen.
+      const showing = new Set<Element>();
+      const through = ['top', 'layers', 'suite'].flatMap((id) => document.getElementById(id) ?? []);
+      const watcher = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) showing.add(entry.target);
+          else showing.delete(entry.target);
+        }
+        stage.setActive(showing.size > 0);
+      });
+      for (const section of through) watcher.observe(section);
+
       // The suite list lights each app's flux tube.
       for (const row of document.querySelectorAll<HTMLElement>('[data-tube]')) {
         const index = Number(row.dataset.tube);

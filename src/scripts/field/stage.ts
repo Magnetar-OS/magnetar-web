@@ -43,6 +43,8 @@ export interface Stage {
   flare(): void;
   /** 0 = hero framing, 1 = star parked to the side behind reading text. */
   setDrift(value: number): void;
+  /** Whether the field can be seen at all; while it can't, no frames are drawn. */
+  setActive(value: boolean): void;
 }
 
 const pick = (id: string): FieldVariant => variants.find((v) => v.id === id) ?? variants[0]!;
@@ -131,10 +133,8 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     camera.position.y = camY;
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
-    dirty = true;
+    invalidate();
   };
-  new ResizeObserver(() => resize()).observe(canvas);
-  show(variant.id);
 
   if (!reducedMotion) {
     window.addEventListener('pointermove', (e) => {
@@ -144,7 +144,7 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
   }
 
   let last = performance.now();
-  renderer.setAnimationLoop(() => {
+  const frame = () => {
     const now = performance.now();
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
@@ -178,7 +178,32 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     u.intensity.value = 1 - driftNow * (wide ? 0.45 : 0.72);
 
     renderer.render(scene, camera);
-  });
+  };
+
+  // With motion, draw every frame while the field can be seen. With reduced
+  // motion nothing moves on its own, so draw one frame per change instead of
+  // keeping a loop ticking. Either way, draw nothing while it can't be seen.
+  let active = true;
+  let queued = false;
+  function schedule() {
+    if (!reducedMotion) {
+      renderer.setAnimationLoop(active ? frame : null);
+    } else if (active && dirty && !queued) {
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        frame();
+      });
+    }
+  }
+  function invalidate() {
+    dirty = true;
+    if (reducedMotion) schedule();
+  }
+
+  new ResizeObserver(() => resize()).observe(canvas);
+  show(variant.id);
+  schedule();
 
   return {
     backend,
@@ -190,14 +215,21 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     focus(index) {
       if (index >= 0) u.focus.value = index;
       focusTarget = index >= 0 ? 1 : 0;
-      dirty = true;
+      invalidate();
     },
     flare() {
       if (!reducedMotion) flare = 1;
     },
     setDrift(value) {
       driftTarget = value;
-      dirty = true;
+      invalidate();
+    },
+    setActive(value) {
+      if (value === active) return;
+      active = value;
+      // Resume from now, so the first frame back doesn't count the pause.
+      if (active) last = performance.now();
+      schedule();
     },
   };
 }
