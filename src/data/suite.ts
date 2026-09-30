@@ -27,7 +27,7 @@ export const apps: readonly App[] = [
   { name: 'Locket', slug: 'locket', package: 'locket', category: 'Passwords & keyring', summary: 'Keep passwords, keys and secrets for your desktop.', benchmark: 'KeePassXC', hue: '#F2B84B' },
   { name: 'Jump', slug: 'jump', package: 'jump', category: 'Launcher', summary: 'Search applications, windows, files and clipboard.', benchmark: 'Raycast', hue: '#FF8A3D' },
   { name: 'Peek', slug: 'peek', package: 'magnetar-peek', category: 'File preview', summary: 'Preview files without opening them.', benchmark: 'macOS Quick Look', hue: '#3ED2C8' },
-  { name: 'Pencil', slug: 'pencil', package: 'pencil', category: 'Documents', summary: 'Write and format documents.', benchmark: null, hue: '#A66BFF' },
+  { name: 'Pencil', slug: 'pencil', package: 'magnetar-pencil', category: 'Documents', summary: 'Write and format documents.', benchmark: null, hue: '#A66BFF' },
   { name: 'Pocket', slug: 'pocket', package: 'pocket', category: 'Passes & tickets', summary: 'Boarding passes, tickets and cards, with their barcodes ready to scan.', benchmark: null, hue: '#FF6FA8' },
 ];
 
