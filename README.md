@@ -27,11 +27,11 @@ why `package.json` pins `typescript` to exactly `6.0.3`, the last 6.x release.
 | `src/scripts/field/stage.ts` | Renderer, camera, frame loop, page drift, focus and starquake. |
 | `src/scripts/field/shared.ts` | Field building blocks: dipole lines, jets, star, halo. |
 | `src/scripts/field/variants.ts` | The field looks the hero can switch between. |
-| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, robots.txt, the sitemap and `og:url` are there, and the measured figures are the recorded ones. |
+| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, robots.txt, the sitemap and `og:url` are there, the measured figures are the recorded ones, the page is served in its still state, and the phone nav keeps Install. |
 | `scripts/measure-suite.sh` | Counts lines of Rust, tests and `todo!()` calls on each suite repo's `main`, for `measured` in `src/data/suite.ts`. Re-run it and update `measured` when refreshing the figures. |
 | `public/icons/` | App icons, copied from `magnetar-brand/icons/hicolor/scalable/apps/`. |
 | `public/robots.txt` | Allows all crawlers and points them at the sitemap, which `@astrojs/sitemap` writes at build time. |
-| `public/field-still.svg` | Shown when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |
+| `public/field-still.svg` | Shown in place of the field without JavaScript, or when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |
 
 ## The field
 
@@ -48,6 +48,30 @@ tube, and "Set off a starquake" blows the field outward.
 
 With `prefers-reduced-motion`, time stops and frames are drawn only when
 something changes.
+
+The page is served in a still state (`data-field="still"` on `<html>`): the
+still image, and a readout of one line saying why. An inline script in `<head>`
+moves it to `starting` before anything is drawn, and the hero sets `live` once
+the field runs, or `still` again if it can't.
+
+## Release
+
+Production is [magnetaros.com](https://magnetaros.com), the Vercel project
+`magnetar-web`. Vercel builds with `pnpm test` (`vercel.json`), so nothing is
+deployed from a page that fails the checks in `tests/`.
+
+1. Refresh the measured figures. `scripts/measure-suite.sh` reads the suite's
+   repos checked out beside this one, so it can't run on Vercel: its totals are
+   committed as `measured` in `src/data/suite.ts`. Run it, copy the `total` row
+   into `measured` (and the month into `date`), and commit.
+2. `pnpm test`.
+3. Push `main`, then run `vercel deploy --prod` from this directory. It uploads
+   the working tree and builds it on Vercel.
+
+The Vercel project is not connected to this repository yet, because the Vercel
+GitHub App is not installed on the Magnetar-OS organisation. Once it is, run
+`vercel git connect` here: from then on pushing `main` deploys, and step 3 is
+only the push.
 
 ## Brand assets
 
