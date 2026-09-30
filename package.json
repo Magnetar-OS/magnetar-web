@@ -14,7 +14,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "pnpm build && node --test tests/"
+    "test": "pnpm build && node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
