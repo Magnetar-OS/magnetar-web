@@ -47,8 +47,8 @@ export const underneath: readonly { name: string; repo: string; role: string }[]
  */
 export const measured = {
   date: 'September 2026',
-  rustLines: 201_790,
-  tests: 2_717,
+  rustLines: 222_506,
+  tests: 3_085,
   todos: 0,
 } as const;
 
