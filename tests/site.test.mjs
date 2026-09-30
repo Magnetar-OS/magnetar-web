@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, statSync } from 'node:fs';
 import { test } from 'node:test';
-import { apps, measured } from '../src/data/suite.ts';
+import { GITHUB, apps, measured } from '../src/data/suite.ts';
 
 const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
 
@@ -76,4 +76,15 @@ test('without JavaScript the page stays in the still state and says why', () => 
   assert.ok(/<script>[^<]*dataset\.field\s*=\s*['"]starting['"]/.test(head), 'no inline script moves a scripted page out of the still state');
   const text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, ''));
   assert.ok(text.includes('The live field needs JavaScript, so this is a still image.'), 'the readout does not say why the field is still');
+});
+
+test('the phone nav drops Layers and Apps but keeps Install and Source', () => {
+  const nav = html.match(/<nav[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? '';
+  const links = [...nav.matchAll(/<a\b([^>]*)>/g)].map((m) => ({
+    href: decode(m[1].match(/\bhref="([^"]*)"/)?.[1] ?? ''),
+    wideOnly: /\bclass="[^"]*\bwide-only\b/.test(m[1]),
+  }));
+  const hrefs = (wideOnly) => links.filter((l) => l.wideOnly === wideOnly).map((l) => l.href);
+  assert.deepEqual(hrefs(true), ['#layers', '#suite']);
+  assert.deepEqual(hrefs(false), ['#install', GITHUB]);
 });

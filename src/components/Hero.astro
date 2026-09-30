@@ -8,8 +8,8 @@ import { variants } from '../scripts/field/variants';
 <header class="bar">
   <a class="mark" href="#top" aria-label="Magnetar, back to top">magnetar</a>
   <nav aria-label="Sections">
-    <a href="#layers">Layers</a>
-    <a href="#suite">Apps</a>
+    <a class="wide-only" href="#layers">Layers</a>
+    <a class="wide-only" href="#suite">Apps</a>
     <a href="#install">Install</a>
     <a href={GITHUB} rel="external">Source&nbsp;↗</a>
   </nav>
@@ -229,8 +229,9 @@ import { variants } from '../scripts/field/variants';
     color: var(--corona);
   }
 
+  /* A phone's bar has room for two links: the way in and the source. */
   @media (max-width: 520px) {
-    nav a:not([rel]) {
+    nav .wide-only {
       display: none;
     }
   }
