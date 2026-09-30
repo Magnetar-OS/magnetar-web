@@ -69,3 +69,11 @@ test('the licence line names the apps that are GPL-3.0-or-later rather than -onl
   const text = decode(html.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ');
   assert.ok(text.includes('(Locket and Peek GPL‑3.0 or later)'), 'the footer implies every app is GPL-3.0-only');
 });
+
+test('without JavaScript the page stays in the still state and says why', () => {
+  assert.ok(/<html[^>]*\sdata-field="still"/.test(html), 'the served page does not start in the still state');
+  const head = html.slice(0, html.indexOf('</head>'));
+  assert.ok(/<script>[^<]*dataset\.field\s*=\s*['"]starting['"]/.test(head), 'no inline script moves a scripted page out of the still state');
+  const text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]+>/g, ''));
+  assert.ok(text.includes('The live field needs JavaScript, so this is a still image.'), 'the readout does not say why the field is still');
+});

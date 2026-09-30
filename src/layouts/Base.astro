@@ -9,12 +9,17 @@ interface Props {
 const { title, description } = Astro.props;
 const og = new URL('/og.jpg', Astro.site);
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// The page is served in the field's still state (`data-field="still"`, see
+// Hero.astro), which is the one a reader keeps when scripts don't run. Where
+// they do, the inline script in <head> moves it on before anything is drawn.
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-field="still">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>document.documentElement.dataset.field = 'starting';</script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />

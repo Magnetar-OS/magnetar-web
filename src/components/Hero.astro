@@ -33,6 +33,7 @@ import { variants } from '../scripts/field/variants';
   </div>
 
   <div class="readout" aria-label="Live simulation readout">
+    <p class="still" data-readout="still">The live field needs JavaScript, so this is a still image.</p>
     <fieldset class="variants" disabled>
       <legend>Field</legend>
       <div class="options">
@@ -146,9 +147,7 @@ import { variants } from '../scripts/field/variants';
       // No WebGPU and no WebGL 2: show the still image instead.
       console.error('The field could not start:', error);
       document.documentElement.dataset.field = 'still';
-      readout('backend', 'unavailable');
-      readout('spin', 'still image');
-      readout('note', 'This browser can’t run WebGPU or WebGL 2, so this is a still image.');
+      readout('still', 'This browser can’t run WebGPU or WebGL 2, so this is a still image.');
     }
   }
 
@@ -166,8 +165,27 @@ import { variants } from '../scripts/field/variants';
     background: radial-gradient(ellipse at 50% 42%, #0b1428 0%, var(--void) 62%);
   }
 
+  /* The still state: the page as served, kept when scripts don't run, and set
+     again when the field can't start. It shows the still image, and the readout
+     is one line saying why, without the controls that need a live field. */
   :global(html[data-field='still']) .field {
     background: url('/field-still.svg') center / cover no-repeat, var(--void);
+  }
+
+  .still {
+    display: none;
+    margin: 0;
+    max-width: 22rem;
+    color: var(--dim);
+    line-height: 1.4;
+  }
+
+  :global(html[data-field='still']) .still {
+    display: block;
+  }
+
+  :global(html[data-field='still']) .readout > :not(.still) {
+    display: none;
   }
 
   .bar {
