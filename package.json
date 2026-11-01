@@ -5,7 +5,7 @@
   "type": "module",
   "description": "magnetaros.com — the Magnetar website",
   "license": "GPL-3.0-only",
-  "packageManager": "pnpm@11.28.1",
+  "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -21,12 +21,12 @@
     "@fontsource-variable/anybody": "^5.3.0",
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
     "@fontsource-variable/martian-mono": "^5.3.0",
-    "astro": "^7.3.5",
-    "three": "^0.186.1"
+    "astro": "^7.4.4",
+    "three": "^0.187.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
-    "@types/three": "^0.186.0",
+    "@astrojs/check": "^0.9.12",
+    "@types/three": "^0.187.0",
     "typescript": "6.0.3"
   }
 }
