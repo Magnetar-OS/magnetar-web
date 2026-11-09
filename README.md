@@ -27,9 +27,10 @@ why `package.json` pins `typescript` to exactly `6.0.3`, the last 6.x release.
 | `src/scripts/field/stage.ts` | Renderer, camera, frame loop, page drift, focus and starquake. |
 | `src/scripts/field/shared.ts` | Field building blocks: dipole lines, jets, star, halo. |
 | `src/scripts/field/variants.ts` | The field looks the hero can switch between. |
-| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, robots.txt, the sitemap and `og:url` are there, the measured figures are the recorded ones, the page is served in its still state, and the phone nav keeps Install. |
+| `tests/` | Checks on the built page: the install steps cover every app and place the repository correctly, no link points at the package host root, three.js loads on demand, robots.txt, the sitemap and `og:url` are there, the measured figures are the recorded ones, the page is served in its still state, and the phone nav keeps Install, and every icon the head links to is built. |
 | `scripts/measure-suite.sh` | Counts lines of Rust, tests and `todo!()` calls on each suite repo's `main`, for `measured` in `src/data/suite.ts`. Re-run it and update `measured` when refreshing the figures. |
 | `public/icons/` | App icons, copied from `magnetar-brand/icons/hicolor/scalable/apps/`. |
+| `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png` | The site icon, copied from `magnetar-brand/distribution/web/`. |
 | `public/robots.txt` | Allows all crawlers and points them at the sitemap, which `@astrojs/sitemap` writes at build time. |
 | `public/field-still.svg` | Shown in place of the field without JavaScript, or when neither WebGPU nor WebGL 2 is available; from `magnetar-brand/wallpapers/magnetar.svg`. |
 

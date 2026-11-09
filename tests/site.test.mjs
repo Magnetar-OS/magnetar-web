@@ -88,3 +88,12 @@ test('the phone nav drops Layers and Apps but keeps Install and Source', () => {
   assert.deepEqual(hrefs(true), ['#layers', '#suite']);
   assert.deepEqual(hrefs(false), ['#install', GITHUB]);
 });
+
+test('every icon the head links to is in the build', () => {
+  const links = [...html.matchAll(/<link\b[^>]*\brel="(?:icon|apple-touch-icon)"[^>]*>/g)];
+  const hrefs = links.map((m) => decode(m[0].match(/\bhref="([^"]*)"/)?.[1] ?? ''));
+  assert.deepEqual(hrefs.sort(), ['/apple-touch-icon.png', '/favicon.ico', '/favicon.svg']);
+  for (const href of hrefs) {
+    assert.ok(statSync(new URL(`../dist${href}`, import.meta.url)).size > 0, `${href} is empty`);
+  }
+});
